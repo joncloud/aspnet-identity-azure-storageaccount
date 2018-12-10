@@ -26,7 +26,7 @@ namespace Microsoft.AspNetCore.Identity.AzureStorageAccount
     {
         static class TableNames
         {
-            public static class User
+            public static class Users
             {
                 public const string ById = "AspNetUsersById";
                 public const string ByUserName = "AspNetUsersByUserName";
@@ -62,13 +62,13 @@ namespace Microsoft.AspNetCore.Identity.AzureStorageAccount
             var tableClient = _account.CreateCloudTableClient();
 
             var id = await GetUserIdAsync(user, cancellationToken);
-            await tableClient.InsertAsync(TableNames.User.ById, user, id, id);
+            await tableClient.InsertAsync(TableNames.Users.ById, user, id, id);
 
             var normalizedUserName = await GetNormalizedUserNameAsync(user, cancellationToken);
-            await tableClient.InsertAsync(TableNames.User.ByUserName, user, normalizedUserName, normalizedUserName);
+            await tableClient.InsertAsync(TableNames.Users.ByUserName, user, normalizedUserName, normalizedUserName);
 
             var emailAddress = await GetEmailAsync(user, cancellationToken);
-            await tableClient.InsertAsync(TableNames.User.ByEmailAddress, user, emailAddress, emailAddress);
+            await tableClient.InsertAsync(TableNames.Users.ByEmailAddress, user, emailAddress, emailAddress);
 
             return IdentityResult.Success;
         }
@@ -78,13 +78,13 @@ namespace Microsoft.AspNetCore.Identity.AzureStorageAccount
             var tableClient = _account.CreateCloudTableClient();
 
             var id = await GetUserIdAsync(user, cancellationToken);
-            await tableClient.DeleteAsync(TableNames.User.ById, user, id, id);
+            await tableClient.DeleteAsync(TableNames.Users.ById, user, id, id);
 
             var normalizedUserName = await GetNormalizedUserNameAsync(user, cancellationToken);
-            await tableClient.DeleteAsync(TableNames.User.ByUserName, user, normalizedUserName, normalizedUserName);
+            await tableClient.DeleteAsync(TableNames.Users.ByUserName, user, normalizedUserName, normalizedUserName);
 
             var normalizedEmailAddress = await GetNormalizedEmailAsync(user, cancellationToken);
-            await tableClient.DeleteAsync(TableNames.User.ByEmailAddress, user, normalizedEmailAddress, normalizedEmailAddress);
+            await tableClient.DeleteAsync(TableNames.Users.ByEmailAddress, user, normalizedEmailAddress, normalizedEmailAddress);
 
             return IdentityResult.Success;
         }
@@ -94,13 +94,13 @@ namespace Microsoft.AspNetCore.Identity.AzureStorageAccount
         public async Task<TUser> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
             var tableClient = _account.CreateCloudTableClient();
-            return await tableClient.FindAsync<TUser>(TableNames.User.ById, userId, userId);
+            return await tableClient.FindAsync<TUser>(TableNames.Users.ById, userId, userId);
         }
 
         public async Task<TUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken)
         {
             var tableClient = _account.CreateCloudTableClient();
-            return await tableClient.FindAsync<TUser>(TableNames.User.ByUserName, normalizedUserName, normalizedUserName);
+            return await tableClient.FindAsync<TUser>(TableNames.Users.ByUserName, normalizedUserName, normalizedUserName);
         }
 
         public Task<string> GetNormalizedUserNameAsync(TUser user, CancellationToken cancellationToken) =>
@@ -129,13 +129,13 @@ namespace Microsoft.AspNetCore.Identity.AzureStorageAccount
             var tableClient = _account.CreateCloudTableClient();
 
             var id = await GetUserIdAsync(user, cancellationToken);
-            await tableClient.InsertOrReplaceAsync(TableNames.User.ById, user, id, id);
+            await tableClient.InsertOrReplaceAsync(TableNames.Users.ById, user, id, id);
 
             var normalizedUserName = await GetNormalizedUserNameAsync(user, cancellationToken);
-            await tableClient.InsertOrReplaceAsync(TableNames.User.ByUserName, user, normalizedUserName, normalizedUserName);
+            await tableClient.InsertOrReplaceAsync(TableNames.Users.ByUserName, user, normalizedUserName, normalizedUserName);
 
             var normalizedEmailAddress = await GetNormalizedEmailAsync(user, cancellationToken);
-            await tableClient.InsertOrReplaceAsync(TableNames.User.ByEmailAddress, user, normalizedEmailAddress, normalizedEmailAddress);
+            await tableClient.InsertOrReplaceAsync(TableNames.Users.ByEmailAddress, user, normalizedEmailAddress, normalizedEmailAddress);
 
             return IdentityResult.Success;
         }
@@ -144,7 +144,7 @@ namespace Microsoft.AspNetCore.Identity.AzureStorageAccount
         {
             var tableClient = _account.CreateCloudTableClient();
 
-            await tableClient.InsertAsync(TableNames.User.ByLoginProvider, user, login.LoginProvider, login.ProviderKey);
+            await tableClient.InsertAsync(TableNames.Users.ByLoginProvider, user, login.LoginProvider, login.ProviderKey);
 
             await tableClient.InsertAsync(TableNames.UserLogins.ByUserId, login, user.Id, login.LoginProvider);
         }
@@ -153,7 +153,7 @@ namespace Microsoft.AspNetCore.Identity.AzureStorageAccount
         {
             var tableClient = _account.CreateCloudTableClient();
 
-            await tableClient.DeleteAsync(TableNames.User.ByLoginProvider, user, loginProvider, providerKey);
+            await tableClient.DeleteAsync(TableNames.Users.ByLoginProvider, user, loginProvider, providerKey);
 
             var login = new UserLoginInfo(loginProvider, providerKey, loginProvider);
             await tableClient.DeleteAsync(TableNames.UserLogins.ByUserId, login, user.Id, loginProvider);
@@ -164,14 +164,14 @@ namespace Microsoft.AspNetCore.Identity.AzureStorageAccount
             var tableClient = _account.CreateCloudTableClient();
 
             var id = await GetUserIdAsync(user, cancellationToken);
-            return await tableClient.FindAllAsync<UserLoginInfo>(TableNames.User.ByLoginProvider, id);
+            return await tableClient.FindAllAsync<UserLoginInfo>(TableNames.Users.ByLoginProvider, id);
         }
 
         public async Task<TUser> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)
         {
             var tableClient = _account.CreateCloudTableClient();
 
-            return await tableClient.FindAsync<TUser>(TableNames.User.ByLoginProvider, loginProvider, providerKey);
+            return await tableClient.FindAsync<TUser>(TableNames.Users.ByLoginProvider, loginProvider, providerKey);
         }
 
         public async Task<IList<Claim>> GetClaimsAsync(TUser user, CancellationToken cancellationToken)
@@ -192,7 +192,7 @@ namespace Microsoft.AspNetCore.Identity.AzureStorageAccount
 
             foreach (var claim in claims)
             {
-                await tableClient.InsertAsync(TableNames.User.ByClaim, user, claim.GetKey(), id);
+                await tableClient.InsertAsync(TableNames.Users.ByClaim, user, claim.GetKey(), id);
             }
         }
 
@@ -207,15 +207,15 @@ namespace Microsoft.AspNetCore.Identity.AzureStorageAccount
             {
                 await tableClient.DeleteAsync(TableNames.Claims.ByUserId, existingClaim, id, existingKey);
             }
-            var existingUser = await tableClient.FindAsync<TUser>(TableNames.User.ByClaim, existingKey, id);
+            var existingUser = await tableClient.FindAsync<TUser>(TableNames.Users.ByClaim, existingKey, id);
             if (existingUser != null)
             {
-                await tableClient.DeleteAsync(TableNames.User.ByClaim, existingUser, existingKey, id);
+                await tableClient.DeleteAsync(TableNames.Users.ByClaim, existingUser, existingKey, id);
             }
 
             var newKey = newClaim.GetKey();
             await tableClient.InsertOrReplaceAsync(TableNames.Claims.ByUserId, newClaim, id, newKey);
-            await tableClient.InsertOrReplaceAsync(TableNames.User.ByClaim, user, newKey, id);
+            await tableClient.InsertOrReplaceAsync(TableNames.Users.ByClaim, user, newKey, id);
         }
 
         public async Task RemoveClaimsAsync(TUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
@@ -227,7 +227,7 @@ namespace Microsoft.AspNetCore.Identity.AzureStorageAccount
 
             foreach (var claim in claims)
             {
-                await tableClient.DeleteAsync(TableNames.User.ByClaim, user, claim.GetKey(), id);
+                await tableClient.DeleteAsync(TableNames.Users.ByClaim, user, claim.GetKey(), id);
             }
         }
 
@@ -236,7 +236,7 @@ namespace Microsoft.AspNetCore.Identity.AzureStorageAccount
             var tableClient = _account.CreateCloudTableClient();
 
             var partitionKey = claim.GetKey();
-            return await tableClient.FindAllAsync<TUser>(TableNames.User.ByClaim, partitionKey);
+            return await tableClient.FindAllAsync<TUser>(TableNames.Users.ByClaim, partitionKey);
         }
 
         public Task SetPasswordHashAsync(TUser user, string passwordHash, CancellationToken cancellationToken)
@@ -282,7 +282,7 @@ namespace Microsoft.AspNetCore.Identity.AzureStorageAccount
         {
             var tableClient = _account.CreateCloudTableClient();
 
-            return await tableClient.FindAsync<TUser>(TableNames.User.ByEmailAddress, normalizedEmail, normalizedEmail);
+            return await tableClient.FindAsync<TUser>(TableNames.Users.ByEmailAddress, normalizedEmail, normalizedEmail);
         }
 
         public Task<string> GetNormalizedEmailAsync(TUser user, CancellationToken cancellationToken) =>
