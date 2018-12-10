@@ -4,7 +4,7 @@ namespace Microsoft.AspNetCore.Identity.AzureStorageAccount
 {
     static class ClaimExtensions
     {
-        public static string GetRowKey(this Claim claim) =>
+        public static string GetKey(this Claim claim) =>
             claim.Type + claim.Value;
     }
 }

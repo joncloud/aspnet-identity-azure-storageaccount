@@ -118,7 +118,7 @@ namespace Microsoft.AspNetCore.Identity.AzureStorageAccount
             var tableClient = _account.CreateCloudTableClient();
 
             var id = await GetRoleIdAsync(role, cancellationToken);
-            await tableClient.InsertAsync(TableNames.Claims.ByRoleId, claim, id, claim.GetRowKey());
+            await tableClient.InsertAsync(TableNames.Claims.ByRoleId, claim, id, claim.GetKey());
         }
 
         public async Task RemoveClaimAsync(TRole role, Claim claim, CancellationToken cancellationToken = default(CancellationToken))
@@ -126,7 +126,7 @@ namespace Microsoft.AspNetCore.Identity.AzureStorageAccount
             var tableClient = _account.CreateCloudTableClient();
 
             var id = await GetRoleIdAsync(role, cancellationToken);
-            await tableClient.DeleteAsync(TableNames.Claims.ByRoleId, claim, id, claim.GetRowKey());
+            await tableClient.DeleteAsync(TableNames.Claims.ByRoleId, claim, id, claim.GetKey());
         }
     }
 }
