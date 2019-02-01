@@ -146,7 +146,7 @@ namespace Microsoft.AspNetCore.Identity.AzureStorageAccount
 
             await tableClient.InsertAsync(TableNames.Users.ByLoginProvider, user, login.LoginProvider, login.ProviderKey);
 
-            await tableClient.InsertAsync(TableNames.UserLogins.ByUserId, login, user.Id, login.LoginProvider);
+            await tableClient.InsertAsync(TableNames.UserLogins.ByUserId, new UserLoginInfoEntity(login), user.Id, login.LoginProvider);
         }
 
         public async Task RemoveLoginAsync(TUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
@@ -155,7 +155,7 @@ namespace Microsoft.AspNetCore.Identity.AzureStorageAccount
 
             await tableClient.DeleteAsync(TableNames.Users.ByLoginProvider, user, loginProvider, providerKey);
 
-            var login = new UserLoginInfo(loginProvider, providerKey, loginProvider);
+            var login = new UserLoginInfoEntity(loginProvider, providerKey, loginProvider);
             await tableClient.DeleteAsync(TableNames.UserLogins.ByUserId, login, user.Id, loginProvider);
         }
 
@@ -164,7 +164,9 @@ namespace Microsoft.AspNetCore.Identity.AzureStorageAccount
             var tableClient = _account.CreateCloudTableClient();
 
             var id = await GetUserIdAsync(user, cancellationToken);
-            return await tableClient.FindAllAsync<UserLoginInfo>(TableNames.Users.ByLoginProvider, id);
+            var list = await tableClient.FindAllAsync<UserLoginInfoEntity>(TableNames.Users.ByLoginProvider, id);
+
+            return list.Select(item => item.ToUserLoginInfo()).ToList();
         }
 
         public async Task<TUser> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)
